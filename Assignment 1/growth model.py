@@ -1,54 +1,71 @@
 from pylab import *
 
-# Parameters for logistic growth
-r = 0.1  # growth rate
+# Parameters for logistic growth with and without Allee effect
+r = 0.01  # growth rate
 K = 100   # carrying capacity
+A = 2     # Allee threshold (minimal population size)
 
 def initialize():
-    global x, result, time
-    x = 2  # initial population
-    result = [x]
+    global x, y, result_f, result_g, time
+    x = 3  # initial population for standard logistic model
+    y = 3  # initial population for Allee effect model
+    result_f = [x]  # results for f(x) or standard logistic
+    result_g = [y]  # results for g(y) or Allee effect
     time = [0]
 
 def observe():
-    global x, result, time
-    result.append(x)
+    global x, y, result_f, result_g, time
+    result_f.append(x)
+    result_g.append(y)
     time.append(len(time))
 
 def f(x):
     ''' Logistic growth function: x_(t+1) = x_t + r*x_t*(1 - x_t/K) '''
     return x + r * x * (1 - x / K)
 
+def g(y):
+    ''' Logistic growth with Allee effect: y_(t+1) = y_t + r*y_t*(1 - y_t/K)*(y_t - A) '''
+    return y + r * y * (1 - y / K) * (y - A)
+
 def update():
-    global x
-    x = f(x)
+    global x, y
+    x = f(x)  # Standard logistic model
+    y = g(y)  # Allee effect model
 
 # Initialize the model
 initialize()
 
-# Run simulation for 120 time steps
-for t in range(120):
+# Run simulation for 1000 time steps
+for t in range(1000):
     update()
     observe()
 
-# Plot population (x_t) against time (t)
+# Plot both models on the same graph
 mpl.rcParams['font.family'] = 'Arial'
-figure(figsize=(10, 6))
-plot(time, result, '-', color= '#89CFF0',  linewidth=2, marker='o', markersize=3)
+figure(figsize=(12, 8))
+plot(time, result_f, '-', color='#89CFF0', linewidth=2, marker='o', markersize=3, label='Standard Logistic')
+plot(time, result_g, '-', color='#00008B', linewidth=2, marker='s', markersize=3, label='Allee Effect')
 axhline(y=K, color='#FFB6C1', linestyle='--', label=f'Carrying capacity K = {K}')
+axhline(y=A, color='#FF6B6B', linestyle='--', label=f'Allee threshold A = {A}')
 grid(True, alpha=0.3)
-xlabel('Time (t)', fontsize=12)
-ylabel('Population x$_t$', fontsize=12)
-title(f'Logistic Growth Model', fontsize=14)
-legend()
+xlabel('Time (t)', fontsize=16)
+ylabel('Population', fontsize=16)
+title(f'Standard Logistic vs Allee Effect Models (x$_0$ = {result_f[0]:.0f}, y$_0$ = {result_g[0]:.0f})', fontsize=18)
+legend(loc="upper left", bbox_to_anchor=(1, 1), fontsize=14)
 xlim(0, len(time)-1)
 ylim(0, K*1.1)
-grid(False)
+tight_layout() 
 show()
-# plt.savefig("growth model.png", dpi=300, bbox_inches='tight')  # high-resolution
+plt.savefig("growth model_3.png", dpi=300, bbox_inches='tight')  # high-resolution
 
 # Print final values
-print(f"Initial population: {result[0]:.3f}")
-print(f"Final population: {result[-1]:.3f}")
+print("=== Standard Logistic Model ===")
+print(f"Initial population: {result_f[0]:.3f}")
+print(f"Final population: {result_f[-1]:.3f}")
+print("\n=== Allee Effect Model ===")
+print(f"Initial population: {result_g[0]:.3f}")
+print(f"Final population: {result_g[-1]:.3f}")
+print(f"\n=== Parameters ===")
 print(f"Carrying capacity: {K}")
+print(f"Allee threshold: {A}")
 print(f"Growth rate: {r}")

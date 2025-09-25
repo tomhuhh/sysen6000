@@ -1,8 +1,6 @@
 from pylab import *
 
 # Parameters for logistic growth with and without Allee effect
-r = 0.01  # growth rate
-K = 100   # carrying capacity
 r = 0.15  # growth rate
 K = 800   # carrying capacity
 A = 100     # Allee threshold (minimal population size)

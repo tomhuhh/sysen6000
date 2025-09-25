@@ -6,10 +6,10 @@ r = 0.1
 def initialize():
     global p_c, p_l, p_n, results_c, results_l, results_n, time
     # Initial probabilities (must sum to 1)
-    p_c = 0.4  # conservative probability
-    p_l = 0.35  # liberal probability  
-    p_n = 0.25  # neutral probability
-    
+    p_c = 1/3  # conservative probability
+    p_l = 1/3  # liberal probability
+    p_n = 1 - p_c - p_l  # neutral probability
+
     # Store results for plotting
     results_c = [p_c]
     results_l = [p_l]
@@ -87,4 +87,5 @@ legend(loc="upper left", bbox_to_anchor=(1, 1), fontsize=14)
 xlim(0, len(time)-1)
 ylim(0, 1.05)
 tight_layout()
+plt.savefig("public opinion dynamics_tie.png", dpi=300, bbox_inches='tight')  # high-resolution
 show()

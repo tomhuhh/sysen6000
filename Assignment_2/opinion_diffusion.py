@@ -19,7 +19,7 @@ print(eigenvalues)
 print("\nEigenvectors:")
 print(eigenvectors)
 
-def opinion_diffusion_visualization(A, steps=100, seed=None, save_path="opinion_diffusion.png"):
+def opinion_diffusion_visualization(A, steps=100, seed=None, save_path="./Assignment_2/results/opinion_diffusion.png"):
     # Initialize random initial values
     n = A.shape[0]
     rng = np.random.default_rng(seed)

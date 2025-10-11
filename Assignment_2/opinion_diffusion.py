@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from pylab import *
 
 A = np.array([
     [1/3,1/3,1/3,0,0],
@@ -19,35 +20,64 @@ print(eigenvalues)
 print("\nEigenvectors:")
 print(eigenvectors)
 
-def opinion_diffusion_visualization(A, steps=100, seed=None, save_path="./Assignment_2/results/opinion_diffusion.png"):
-    # Initialize random initial values
-    n = A.shape[0]
-    rng = np.random.default_rng(seed)
-    initial_values = rng.normal(size=n)
+# v   : current state vector
+# traj: list of states over time (each is a copy of v)
+# time: list of integer time steps
+v = None
+traj = None
+time = None
 
-    # Simulate the system
-    values_over_time = np.zeros((steps + 1, n))
-    values_over_time[0] = initial_values
-    for t in range(steps):
-        values_over_time[t + 1] = A @ values_over_time[t]
+# v0 will be set externally in the plotting loops
+v0 = None
 
-    # Compute the long-term average (just as a reference line)
-    avg_initial = np.mean(initial_values)
+def initialize():
+    global v, traj, time
+    # Start at the externally-provided v0
+    v = v0.copy()
+    traj = [v.copy()]
+    time = [0]
 
-    # Visualization
-    plt.rcParams['font.family'] = 'Arial'
-    plt.rcParams['font.size'] = 18
-    plt.figure(figsize=(10, 6))
-    for i in range(n):
-        plt.plot(values_over_time[:, i], label=f'Person {i + 1}')
-    plt.axhline(avg_initial, linestyle='--', color='gray', linewidth=1, label='Average of initial values')
-    plt.xlabel('Time step')
-    plt.ylabel('Opinion Value')
-    plt.title('Opinion Diffusion Over Time')
-    plt.legend()
-    plt.tight_layout()
-    # Save as high-resolution PNG (300 dpi)
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    plt.show()
+def observe():
+    global v, traj, time
+    traj.append(v.copy())
+    time.append(len(time))
 
-opinion_diffusion_visualization(A, steps=100, seed=42)
+def update():
+    global v
+    # Linear iteration: x(t+1) = A x(t)
+    v = A @ v
+
+# Visualization
+mpl.rcParams['font.family'] = 'Arial'
+
+figure(figsize=(10, 6))
+
+rng = np.random.default_rng(42)
+v0 = rng.normal(size=5)   # initial condition
+
+# Simulate T steps using initialize/observe/update
+initialize()             
+T = 100                    
+for t in range(T):
+    update()
+    observe()
+
+for i in range(len(traj[0])): 
+    plot(time, [state[i] for state in traj], label=f'Person {i+1}', alpha=0.9)
+
+# Reference line: mean of initial values
+avg_initial = sum(traj[0]) / len(traj[0])
+axhline(avg_initial, linestyle='--', linewidth=1, label='Average of initial values')
+
+grid(False)
+xlabel('Time step', fontsize=16)        
+ylabel('Opinion Value', fontsize=16)  
+title('Opinion Diffusion Over Time', fontsize=18) 
+legend(loc='best', fontsize=16)
+tight_layout()
+
+# Save figure
+# save_path = "./results/opinion_time_series.png"
+# os.makedirs(os.path.dirname(save_path), exist_ok=True)
+# plt.savefig(save_path, dpi=300, bbox_inches='tight')
+show()

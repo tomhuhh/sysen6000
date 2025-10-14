@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from pylab import *
 
 A = np.array([
+    [1/3,1/3,0,0,1/3],
     [1/3,1/3,1/3,0,0],
     [0,1/3,1/3,1/3,0],
     [0,0,1/3,1/3,1/3],
-    [1/3,0,0,1/3,1/3],
-    [1/3,1/3,0,0,1/3]
+    [1/3,0,0,1/3,1/3]
 ], dtype=float)
 
 # Compute eigenvalues and eigenvectors
